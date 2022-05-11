@@ -4,6 +4,7 @@ import warnings
 import numpy as np  # Import the Numpy library
 import sys
 
+
 img = cv2.imread("Bilder/Rahmen.png") #
 img = cv2.resize(img, (1200, 800))
 
@@ -15,7 +16,7 @@ camera.set(5,60)
 
 #arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
 
-
+# main loop
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
     imgbearbeiten = img     # ausgebe bild zurücksetzen
