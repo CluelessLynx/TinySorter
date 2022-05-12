@@ -37,37 +37,37 @@ def dashboard():
     # cv2.imshow("Image", frame)
 
 
+def steinerkennen():
+    # Bild auswerten
+    # bild normalisieren
+    bild_res = cv2.resize(frame, size)
+    bild_normalisiert = (bild_res.astype(np.float32) / 127) - 1
+    # Load the image into the array
+    data[0] = bild_normalisiert
+    # run the inference
+    prediction = model.predict(data)
+    maxwar = str(int(100 * prediction.max()))
+    print(prediction)
+
+def kommunikationlesen():
+    serialread = int(arduino.readline())
+    print(serialread)
+    if serialread > 0:
+       Start = True
+       programmnummer = serialread
+    elif serialread == 0:
+       Start == False
 
 
 # main loop
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
-
-    # img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    # frame = cv2.resize(frame, (250, 200))
-
-    # serialread = int(arduino.readline())
-    # print(serialread)
-    # if serialread > 0:
-    #    Start = True
-    #    programmnummer = serialread
-    # elif serialread == 0:
-    #    Start == False
+    # kommunikationlesen()
 
     if Start == True:
-        # Bild auswerten
-        # bild normalisieren
-        bild_res = cv2.resize(frame, size)
-        bild_normalisiert = (bild_res.astype(np.float32) / 127) - 1
-        # Load the image into the array
-        data[0] = bild_normalisiert
-        # run the inference
-        prediction = model.predict(data)
-        maxwar = str(int(100*prediction.max()))
-        print(prediction)
+        steinerkennen()
 
     dashboard()
-
 
     if cv2.waitKey(1) & 0xFF == ord(' ') or cv2.waitKey(5) & 0xFF == 27:  # Stop if spacebar is detected
         break
