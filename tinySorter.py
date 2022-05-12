@@ -50,6 +50,7 @@ def steinerkennen():
     # print(prediction[0][programmnummer])
     # maxwar = str(int(100 * prediction.max()))
     # print(prediction)
+    return prediction
 
 def kommunikationlesen():
     serialread = int(arduino.readline())
@@ -60,12 +61,15 @@ def kommunikationlesen():
     elif serialread == 0:
        Start == False
 
-def prediktionauswerten():
+def prediktionauswerten(prediction):
     if prediction[0][programmnummer] > 0.8:
-        arduino.write(bytes(1, 'utf-8'))
+        #arduino.write(bytes(1, 'utf-8'))
+        print("Links")
     elif prediction[0][0] < 0.2:
-        arduino.write(bytes(0, 'utf-8'))
-
+        #arduino.write(bytes(0, 'utf-8'))
+        print("Rechts")
+    else:
+        print("warten")
 
 
 
@@ -75,8 +79,8 @@ while (True):
     # kommunikationlesen()
 
     if Start == True:
-        steinerkennen()
-        # prediktionauswerten
+        prediction = steinerkennen()
+        prediktionauswerten(prediction)
 
     dashboard()
 

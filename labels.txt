@@ -1,0 +1,8 @@
+0 nichts
+1 Gelb 4x2
+2 Blau 2x2
+3 Gelb 2x2
+4 Gelb 1x2
+5 Grau 4x2
+6 Rot 4x2
+7 Blau 4x2
