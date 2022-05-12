@@ -13,9 +13,9 @@ img = cv2.resize(img, (1200, 800))
 
 
 camera = cv2.VideoCapture(0)  # create a VideoCapture object with the 'first' camera (your webcam)
-camera.set(3,320)
-camera.set(4,240)
-camera.set(5,60)
+camera.set(3, 320)
+camera.set(4, 240)
+camera.set(5, 60)
 size = (224, 224)
 #camera.set(15, 1.0)
 
@@ -28,6 +28,7 @@ model = load_model('keras_model.h5', compile=False)
     # determined by the first position in the shape tuple, in this case 1.
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 Start = True
+programmnummer = 1
 
 def dashboard():
     imgbearbeiten = img  # ausgebe bild zurücksetzen
@@ -46,8 +47,9 @@ def steinerkennen():
     data[0] = bild_normalisiert
     # run the inference
     prediction = model.predict(data)
-    maxwar = str(int(100 * prediction.max()))
-    print(prediction)
+    # print(prediction[0][programmnummer])
+    # maxwar = str(int(100 * prediction.max()))
+    # print(prediction)
 
 def kommunikationlesen():
     serialread = int(arduino.readline())
@@ -58,6 +60,14 @@ def kommunikationlesen():
     elif serialread == 0:
        Start == False
 
+def prediktionauswerten():
+    if prediction[0][programmnummer] > 0.8:
+        arduino.write(bytes(1, 'utf-8'))
+    elif prediction[0][0] < 0.2:
+        arduino.write(bytes(0, 'utf-8'))
+
+
+
 
 # main loop
 while (True):
@@ -66,6 +76,7 @@ while (True):
 
     if Start == True:
         steinerkennen()
+        # prediktionauswerten
 
     dashboard()
 
