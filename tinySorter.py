@@ -1,10 +1,6 @@
 import cv2  # Import the OpenCV Library
 import serial
-import warnings
 import numpy as np  # Import the Numpy library
-import sys
-import os
-import time
 from tensorflow.keras.models import load_model
 
 
@@ -29,6 +25,13 @@ model = load_model('keras_model.h5', compile=False)
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 Start = True
 programmnummer = 1
+
+labels = []
+with open('labels.txt') as datei:
+    for line in datei:
+        zeile, label = line.split()
+        labels.append(label)
+print(labels)
 
 def dashboard():
     imgbearbeiten = img  # ausgebe bild zurücksetzen
@@ -59,17 +62,20 @@ def kommunikationlesen():
        Start = True
        programmnummer = serialread
     elif serialread == 0:
-       Start == False
+       Start = False
 
 def prediktionauswerten(prediction):
     if prediction[0][programmnummer] > 0.8:
         #arduino.write(bytes(1, 'utf-8'))
         print("Links")
-    elif prediction[0][0] < 0.2:
+        print(labels[prediction.argmax()])
+    elif prediction[0][0] < 0.1:
         #arduino.write(bytes(0, 'utf-8'))
         print("Rechts")
+        print(labels[prediction.argmax()])
     else:
         print("warten")
+        print(labels[prediction.argmax()])
 
 
 
