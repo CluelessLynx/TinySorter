@@ -1,3 +1,4 @@
+import arduino
 import cv2  # Import the OpenCV Library
 import serial
 import numpy as np  # Import the Numpy library
@@ -32,6 +33,9 @@ programmnummer = 1
 ausgabe =""
 
 anzahl_steine = 0
+anzahl_steine_gesamt = 0
+prozentwert = 0
+
 Gelb_4x2 = 0
 Blau_2x2 = 0
 Gelb_2x2 = 0
@@ -41,6 +45,8 @@ Rot_4x2 = 0
 Blau_4x2 = 0
 
 richtung = ""
+
+
 
 
 labels = []
@@ -85,19 +91,37 @@ def kommunikationlesen():
 
 # Funktion Wahrscheinlichkeitsberechnung
 def prediktionauswerten(prediction):
+    ausgewertete_steine = 0
+    ausgewertete_steine_gesamt = 0
+    prozent = 0
+
     if prediction[0][programmnummer] > 0.8:
         #arduino.write(bytes(1, 'utf-8'))
         richtung = "Links"
         print(richtung)
         print(labels[prediction.argmax()])
+        ausgewertete_steine  = ausgewertete_steine +1
+        ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
+
     elif prediction[0][0] < 0.1:
         #arduino.write(bytes(0, 'utf-8'))
         richtung = "Rechts"
         print(richtung)
         print(labels[prediction.argmax()])
+        ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
     else:
         print("warten")
         print(labels[prediction.argmax()])
+
+    anzahl_steine = ausgewertete_steine
+    anzahl_steine_gesamt = ausgewertete_steine_gesamt
+
+
+    if anzahl_steine > 0:
+        prozent = anzahl_steine_gesamt / anzahl_steine
+        prozentwert = prozent
+
+    print(" Gesamt: "+ str(anzahl_steine_gesamt)+ "\n Gesuchte Steine: "+ str(anzahl_steine) +"\n Gefunden %: "+ str(prozent) )
 
 
 
