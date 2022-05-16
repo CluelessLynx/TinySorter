@@ -10,7 +10,7 @@ img = cv2.imread("Bilder/Rahmen.png")
 img = cv2.resize(img, (1200, 800))
 
 #Kameraeinstellungen
-camera = cv2.VideoCapture(0)  # create a VideoCapture object with the 'first' camera (your webcam)
+camera = cv2.VideoCapture(1)  # create a VideoCapture object with the 'first' camera (your webcam)
 camera.set(3, 320)
 camera.set(4, 240)
 camera.set(5, 60)
