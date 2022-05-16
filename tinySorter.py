@@ -121,6 +121,7 @@ def prediktionauswerten(prediction):
         prozent = anzahl_steine_gesamt / anzahl_steine
         prozentwert = prozent
 
+    # funktion nochmal überprüfen!
     print(" Gesamt: "+ str(anzahl_steine_gesamt)+ "\n Gesuchte Steine: "+ str(anzahl_steine) +"\n Gefunden %: "+ str(prozent) )
 
 
