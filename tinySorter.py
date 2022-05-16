@@ -31,6 +31,18 @@ Start = True
 programmnummer = 1
 ausgabe =""
 
+anzahl_steine = 0
+Gelb_4x2 = 0
+Blau_2x2 = 0
+Gelb_2x2 = 0
+Gelb_1x2 = 0
+Grau_4x2 = 0
+Rot_4x2 = 0
+Blau_4x2 = 0
+
+richtung = ""
+
+
 labels = []
 with open('labels.txt') as datei:
     for line in datei:
@@ -61,7 +73,7 @@ def steinerkennen():
     # print(prediction)
     return prediction
 
-#Funltion kommunikation
+#Funktion Kommunikation
 def kommunikationlesen():
     serialread = int(arduino.readline())
     print(serialread)
@@ -75,11 +87,13 @@ def kommunikationlesen():
 def prediktionauswerten(prediction):
     if prediction[0][programmnummer] > 0.8:
         #arduino.write(bytes(1, 'utf-8'))
-        print("Links")
+        richtung = "Links"
+        print(richtung)
         print(labels[prediction.argmax()])
     elif prediction[0][0] < 0.1:
         #arduino.write(bytes(0, 'utf-8'))
-        print("Rechts")
+        richtung = "Rechts"
+        print(richtung)
         print(labels[prediction.argmax()])
     else:
         print("warten")
@@ -95,6 +109,7 @@ while (True):
     if Start == True:
         prediction = steinerkennen()
         prediktionauswerten(prediction)
+
 
     dashboard()
 
