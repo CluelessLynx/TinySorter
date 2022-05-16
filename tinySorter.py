@@ -2,12 +2,14 @@ import cv2  # Import the OpenCV Library
 import serial
 import numpy as np  # Import the Numpy library
 from tensorflow.keras.models import load_model
+from keras import __version__
 
 
-img = cv2.imread("Bilder/Rahmen.png") #
+#Rahmen
+img = cv2.imread("Bilder/Rahmen.png")
 img = cv2.resize(img, (1200, 800))
 
-
+#Kameraeinstellungen
 camera = cv2.VideoCapture(0)  # create a VideoCapture object with the 'first' camera (your webcam)
 camera.set(3, 320)
 camera.set(4, 240)
@@ -17,14 +19,17 @@ size = (224, 224)
 
 #arduino = serial.Serial(port='COM3', baudrate=115200, timeout=.1)
 
-
+#KI-Modell
 model = load_model('keras_model.h5', compile=False)
     # Create the array of the right shape to feed into the keras model
     # The 'length' or number of images you can put into the array is
     # determined by the first position in the shape tuple, in this case 1.
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+
+#Globale Variablen
 Start = True
 programmnummer = 1
+ausgabe =""
 
 labels = []
 with open('labels.txt') as datei:
@@ -33,6 +38,7 @@ with open('labels.txt') as datei:
         labels.append(label)
 print(labels)
 
+#Funktion Dashboard anzeige
 def dashboard():
     imgbearbeiten = img  # ausgebe bild zurücksetzen
     # dashboard bauen und ausgeben
@@ -40,7 +46,7 @@ def dashboard():
     cv2.imshow("Image", imgbearbeiten)
     # cv2.imshow("Image", frame)
 
-
+#Funltion steinerkennen
 def steinerkennen():
     # Bild auswerten
     # bild normalisieren
@@ -55,6 +61,7 @@ def steinerkennen():
     # print(prediction)
     return prediction
 
+#Funltion kommunikation
 def kommunikationlesen():
     serialread = int(arduino.readline())
     print(serialread)
@@ -64,6 +71,7 @@ def kommunikationlesen():
     elif serialread == 0:
        Start = False
 
+# Funktion Wahrscheinlichkeitsberechnung
 def prediktionauswerten(prediction):
     if prediction[0][programmnummer] > 0.8:
         #arduino.write(bytes(1, 'utf-8'))
@@ -79,7 +87,7 @@ def prediktionauswerten(prediction):
 
 
 
-# main loop
+# main loop - Hauptprogramm
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
     # kommunikationlesen()
