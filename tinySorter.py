@@ -33,7 +33,7 @@ ausgabe =""
 
 anzahl_steine = 0
 anzahl_steine_gesamt = 0
-prozentwert = 0
+prozentwert = 0.0
 
 Gelb_4x2 = 0
 Gelb_2x2 = 0
@@ -116,44 +116,33 @@ def kommunikationlesen():
 
 # Funktion Wahrscheinlichkeitsberechnung
 def prediktionauswerten(prediction):
-    ausgewertete_steine = 0
-    ausgewertete_steine_gesamt = 0
-    prozent = 0
 
     if prediction[0][programmnummer] > 0.8:
-        arduino.write(bytes(1, 'utf-8'))
+        # arduino.write(bytes(1, 'utf-8'))
         richtung = "Links"
         print(richtung)
-        print(labels[prediction.argmax()])
-        ausgewertete_steine  = ausgewertete_steine +1
-        ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
+        print(labels[prediction.argmax()])  # gesuchter Stein
+        gefunden = "True"
 
     elif prediction[0][0] < 0.1:
         arduino.write(bytes(0, 'utf-8'))
         richtung = "Rechts"
         print(richtung)
         print(labels[prediction.argmax()])
-        ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
+        gefunden ="False"
+
     else:
         print("warten")
         print(labels[prediction.argmax()])
+        gefunden = "nichts"
 
-    anzahl_steine = ausgewertete_steine
-    anzahl_steine_gesamt = ausgewertete_steine_gesamt
-
-
-    if anzahl_steine > 0:
-        prozent = anzahl_steine_gesamt / anzahl_steine
-        prozentwert = prozent
-
-    # funktion nochmal überprüfen!
-    print(" Gesamt: "+ str(anzahl_steine_gesamt)+ "\n Gesuchte Steine: "+ str(anzahl_steine) +"\n Gefunden %: "+ str(prozent) )
-
+    return gefunden
 
 
 # main loop - Hauptprogramm
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
+    stein_jetzt =""
     while arduino.in_waiting:
         programmnummer = kommunikationlesen()
 
@@ -161,6 +150,21 @@ while (True):
         prediction = steinerkennen()
         prediktionauswerten(prediction)
 
+        if stein_jetzt == "False":
+            stein_gesamt = stein_gesamt + 1
+            stein_jetzt = "nichts"
+
+        if stein_jetzt == "True":
+            stein_gesamt = stein_gesamt + 1
+            stein_gefunden = stein_gefunden + 1
+            stein_jetzt = "nichts"
+
+        if stein_gesamt > 0:
+            stein_prozent = stein_gefunden / stein_gesamt * 100
+
+        print("Gesamt: " + str(stein_gesamt) + "\nGefunden: " + str(stein_gefunden) + "\nin %:" + str(stein_prozent))
+
+        # print (str(stein_jetzt)+ " STEIN JETZT")
 
     dashboard()
 
