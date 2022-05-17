@@ -30,6 +30,7 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 #Globale Variablen
 programmnummer = 0
 ausgabe =""
+waittime = 0
 
 anzahl_steine = 0
 anzahl_steine_gesamt = 0
@@ -81,8 +82,8 @@ def steinerkennen():
 #Funktion Kommunikation
 def kommunikationlesen():
     serialread = int(arduino.readline())
-    print(serialread)
-    print(type(serialread))
+    #print(serialread)
+    #print(type(serialread))
     return serialread
 
 
@@ -93,23 +94,25 @@ def prediktionauswerten(prediction):
     ausgewertete_steine_gesamt = 0
     prozent = 0
 
-    if prediction[0][programmnummer] > 0.8:
-        arduino.write(bytes(1, 'utf-8'))
-        richtung = "Links"
-        print(richtung)
+    if prediction[0][programmnummer] > 0.7:
+        arduino.write(bytes("2", 'utf-8'))
+        #richtung = "Links"
+        #print(richtung)
         print(labels[prediction.argmax()])
         ausgewertete_steine  = ausgewertete_steine +1
         ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
+        print(prediction)
 
-    elif prediction[0][0] < 0.1:
-        arduino.write(bytes(0, 'utf-8'))
-        richtung = "Rechts"
-        print(richtung)
+    elif prediction[0][0] < 0.2:
+        arduino.write(bytes("1", 'utf-8'))
+        #richtung = "Rechts"
+        #print(richtung)
         print(labels[prediction.argmax()])
         ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
-    else:
-        print("warten")
-        print(labels[prediction.argmax()])
+        print(prediction)
+    #else:
+        #print("warten")
+        #print(labels[prediction.argmax()])
 
     anzahl_steine = ausgewertete_steine
     anzahl_steine_gesamt = ausgewertete_steine_gesamt
@@ -120,7 +123,7 @@ def prediktionauswerten(prediction):
         prozentwert = prozent
 
     # funktion nochmal überprüfen!
-    print(" Gesamt: "+ str(anzahl_steine_gesamt)+ "\n Gesuchte Steine: "+ str(anzahl_steine) +"\n Gefunden %: "+ str(prozent) )
+    #print(" Gesamt: "+ str(anzahl_steine_gesamt)+ "\n Gesuchte Steine: "+ str(anzahl_steine) +"\n Gefunden %: "+ str(prozent) )
 
 
 
@@ -132,9 +135,14 @@ while (True):
 
     if programmnummer > 0:
         prediction = steinerkennen()
-        prediktionauswerten(prediction)
 
-
+        if prediction[0][0] < 0.3 and waittime > 10:
+            prediktionauswerten(prediction)
+            waittime = 0
+            print("stein sortiert")
+        elif prediction[0][0] < 0.5:
+            waittime = waittime + 1
+            print(waittime)
     dashboard()
 
     if cv2.waitKey(1) & 0xFF == ord(' ') or cv2.waitKey(5) & 0xFF == 27:  # Stop if spacebar is detected
