@@ -35,6 +35,12 @@ anzahl_steine = 0
 anzahl_steine_gesamt = 0
 prozentwert = 0.0
 
+stein_gesamt = 0
+stein_gefunden = 0
+stein_jetzt = 0
+stein_prozent = 0
+waittime = 0
+
 Gelb_4x2 = 0
 Gelb_2x2 = 0
 Gelb_1x2 = 0
@@ -118,14 +124,14 @@ def kommunikationlesen():
 def prediktionauswerten(prediction):
 
     if prediction[0][programmnummer] > 0.8:
-        # arduino.write(bytes(1, 'utf-8'))
+        arduino.write(bytes("2", 'utf-8'))
         richtung = "Links"
         print(richtung)
         print(labels[prediction.argmax()])  # gesuchter Stein
         gefunden = "True"
 
     elif prediction[0][0] < 0.1:
-        arduino.write(bytes(0, 'utf-8'))
+        arduino.write(bytes("1", 'utf-8'))
         richtung = "Rechts"
         print(richtung)
         print(labels[prediction.argmax()])
@@ -168,7 +174,7 @@ while (True):
         if stein_gesamt > 0:
             stein_prozent = stein_gefunden / stein_gesamt * 100
 
-        print("Gesamt: " + str(stein_gesamt) + "\nGefunden: " + str(stein_gefunden) + "\nin %:" + str(stein_prozent))
+        # print("Gesamt: " + str(stein_gesamt) + "\nGefunden: " + str(stein_gefunden) + "\nin %:" + str(stein_prozent))
 
         # print (str(stein_jetzt)+ " STEIN JETZT")
 
