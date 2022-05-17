@@ -30,19 +30,26 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 #Globale Variablen
 programmnummer = 0
 ausgabe =""
-waittime = 0
 
 anzahl_steine = 0
 anzahl_steine_gesamt = 0
-prozentwert = 0
+prozentwert = 0.0
 
 Gelb_4x2 = 0
-Blau_2x2 = 0
 Gelb_2x2 = 0
 Gelb_1x2 = 0
-Grau_4x2 = 0
-Rot_4x2 = 0
+
 Blau_4x2 = 0
+Blau_2x2 = 0
+Blau_1x2 = 0
+
+Rot_4x2 = 0
+Rot_2x2 = 0
+Rot_1x2 = 0
+
+Grau_4x2 = 0
+
+
 
 richtung = ""
 
@@ -64,6 +71,25 @@ def dashboard():
     cv2.imshow("Image", imgbearbeiten)
     # cv2.imshow("Image", frame)
 
+    cv2.putText(img=img, text='Tiny Sorter ', org=(170, 150), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=3, color=(0, 255, 0), thickness=3)
+    cv2.putText(img=img, text='         4x2          2x2         2x1', org=(120, 210), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text='Blau', org=(120, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+    cv2.putText(img=img, text=str(Blau_4x2), org=(285, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Blau_2x2), org=(505, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Blau_1x2), org=(709, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+    cv2.putText(img=img, text='Gelb', org=(120, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Gelb_4x2), org=(285, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Gelb_2x2), org=(505, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Gelb_1x2), org=(709, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+    cv2.putText(img=img, text='Rot', org=(120, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Rot_4x2), org=(285, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Rot_2x2), org=(505, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Rot_1x2), org=(709, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+
 #Funltion steinerkennen
 def steinerkennen():
     # Bild auswerten
@@ -82,60 +108,46 @@ def steinerkennen():
 #Funktion Kommunikation
 def kommunikationlesen():
     serialread = int(arduino.readline())
-    #print(serialread)
-    #print(type(serialread))
+    print(serialread)
+    print(type(serialread))
     return serialread
 
 
 
 # Funktion Wahrscheinlichkeitsberechnung
 def prediktionauswerten(prediction):
-    ausgewertete_steine = 0
-    ausgewertete_steine_gesamt = 0
-    prozent = 0
 
-    if prediction[0][programmnummer] > 0.7:
-        arduino.write(bytes("2", 'utf-8'))
-        #richtung = "Links"
-        #print(richtung)
+    if prediction[0][programmnummer] > 0.8:
+        # arduino.write(bytes(1, 'utf-8'))
+        richtung = "Links"
+        print(richtung)
+        print(labels[prediction.argmax()])  # gesuchter Stein
+        gefunden = "True"
+
+    elif prediction[0][0] < 0.1:
+        arduino.write(bytes(0, 'utf-8'))
+        richtung = "Rechts"
+        print(richtung)
         print(labels[prediction.argmax()])
-        ausgewertete_steine  = ausgewertete_steine +1
-        ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
-        print(prediction)
+        gefunden ="False"
 
-    elif prediction[0][0] < 0.2:
-        arduino.write(bytes("1", 'utf-8'))
-        #richtung = "Rechts"
-        #print(richtung)
+    else:
+        print("warten")
         print(labels[prediction.argmax()])
-        ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
-        print(prediction)
-    #else:
-        #print("warten")
-        #print(labels[prediction.argmax()])
+        gefunden = "nichts"
 
-    anzahl_steine = ausgewertete_steine
-    anzahl_steine_gesamt = ausgewertete_steine_gesamt
-
-
-    if anzahl_steine > 0:
-        prozent = anzahl_steine_gesamt / anzahl_steine
-        prozentwert = prozent
-
-    # funktion nochmal überprüfen!
-    #print(" Gesamt: "+ str(anzahl_steine_gesamt)+ "\n Gesuchte Steine: "+ str(anzahl_steine) +"\n Gefunden %: "+ str(prozent) )
-
+    return gefunden
 
 
 # main loop - Hauptprogramm
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
+    stein_jetzt =""
     while arduino.in_waiting:
         programmnummer = kommunikationlesen()
 
     if programmnummer > 0:
         prediction = steinerkennen()
-
         if prediction[0][0] < 0.3 and waittime > 10:
             prediktionauswerten(prediction)
             waittime = 0
@@ -143,6 +155,23 @@ while (True):
         elif prediction[0][0] < 0.5:
             waittime = waittime + 1
             print(waittime)
+
+        if stein_jetzt == "False":
+            stein_gesamt = stein_gesamt + 1
+            stein_jetzt = "nichts"
+
+        if stein_jetzt == "True":
+            stein_gesamt = stein_gesamt + 1
+            stein_gefunden = stein_gefunden + 1
+            stein_jetzt = "nichts"
+
+        if stein_gesamt > 0:
+            stein_prozent = stein_gefunden / stein_gesamt * 100
+
+        print("Gesamt: " + str(stein_gesamt) + "\nGefunden: " + str(stein_gefunden) + "\nin %:" + str(stein_prozent))
+
+        # print (str(stein_jetzt)+ " STEIN JETZT")
+
     dashboard()
 
     if cv2.waitKey(1) & 0xFF == ord(' ') or cv2.waitKey(5) & 0xFF == 27:  # Stop if spacebar is detected
