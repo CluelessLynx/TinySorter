@@ -36,12 +36,20 @@ anzahl_steine_gesamt = 0
 prozentwert = 0
 
 Gelb_4x2 = 0
-Blau_2x2 = 0
 Gelb_2x2 = 0
 Gelb_1x2 = 0
-Grau_4x2 = 0
-Rot_4x2 = 0
+
 Blau_4x2 = 0
+Blau_2x2 = 0
+Blau_1x2 = 0
+
+Rot_4x2 = 0
+Rot_2x2 = 0
+Rot_1x2 = 0
+
+Grau_4x2 = 0
+
+
 
 richtung = ""
 
@@ -62,6 +70,25 @@ def dashboard():
     imgbearbeiten[75:315, 805:1125] = frame  # Cam auf Bild kopieren
     cv2.imshow("Image", imgbearbeiten)
     # cv2.imshow("Image", frame)
+
+    cv2.putText(img=img, text='Tiny Sorter ', org=(170, 150), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=3, color=(0, 255, 0), thickness=3)
+    cv2.putText(img=img, text='         4x2          2x2         2x1', org=(120, 210), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text='Blau', org=(120, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+    cv2.putText(img=img, text=str(Blau_4x2), org=(285, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Blau_2x2), org=(505, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Blau_1x2), org=(709, 270), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+    cv2.putText(img=img, text='Gelb', org=(120, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Gelb_4x2), org=(285, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Gelb_2x2), org=(505, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Gelb_1x2), org=(709, 330), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
+    cv2.putText(img=img, text='Rot', org=(120, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Rot_4x2), org=(285, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Rot_2x2), org=(505, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+    cv2.putText(img=img, text=str(Rot_1x2), org=(709, 390), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 0, 0), thickness=3)
+
 
 #Funltion steinerkennen
 def steinerkennen():
