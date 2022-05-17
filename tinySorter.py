@@ -97,10 +97,10 @@ def dashboard():
 
 
 #Funltion steinerkennen
-def steinerkennen():
+def steinerkennen(frame_ki):
     # Bild auswerten
     # bild normalisieren
-    bild_res = cv2.resize(frame, size)
+    bild_res = cv2.resize(frame_ki, size)
     bild_normalisiert = (bild_res.astype(np.float32) / 127) - 1
     # Load the image into the array
     data[0] = bild_normalisiert
@@ -123,14 +123,14 @@ def kommunikationlesen():
 # Funktion Wahrscheinlichkeitsberechnung
 def prediktionauswerten(prediction):
 
-    if prediction[0][programmnummer] > 0.8:
+    if prediction[0][programmnummer] > 0.7:
         arduino.write(bytes("2", 'utf-8'))
         richtung = "Links"
         print(richtung)
         print(labels[prediction.argmax()])  # gesuchter Stein
         gefunden = "True"
 
-    elif prediction[0][0] < 0.1:
+    elif prediction[0][0] < 0.3:
         arduino.write(bytes("1", 'utf-8'))
         richtung = "Rechts"
         print(richtung)
@@ -148,12 +148,13 @@ def prediktionauswerten(prediction):
 # main loop - Hauptprogramm
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
+    frame_ki = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     stein_jetzt =""
     while arduino.in_waiting:
         programmnummer = kommunikationlesen()
 
     if programmnummer > 0:
-        prediction = steinerkennen()
+        prediction = steinerkennen(frame_ki)
         if prediction[0][0] < 0.3 and waittime > 10:
             prediktionauswerten(prediction)
             waittime = 0
