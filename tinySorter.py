@@ -1,4 +1,4 @@
-import arduino
+# import arduino
 import cv2  # Import the OpenCV Library
 import serial
 import numpy as np  # Import the Numpy library
@@ -18,7 +18,7 @@ camera.set(5, 60)
 size = (224, 224)
 #camera.set(15, 1.0)
 
-#arduino = serial.Serial(port='COM3', baudrate=115200, timeout=.1)
+arduino = serial.Serial(port='COM3', baudrate=115200, timeout=.1)
 
 #KI-Modell
 model = load_model('keras_model.h5', compile=False)
@@ -28,8 +28,7 @@ model = load_model('keras_model.h5', compile=False)
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 #Globale Variablen
-Start = True
-programmnummer = 1
+programmnummer = 0
 ausgabe =""
 
 anzahl_steine = 0
@@ -83,11 +82,10 @@ def steinerkennen():
 def kommunikationlesen():
     serialread = int(arduino.readline())
     print(serialread)
-    if serialread > 0:
-       Start = True
-       programmnummer = serialread
-    elif serialread == 0:
-       Start = False
+    print(type(serialread))
+    return serialread
+
+
 
 # Funktion Wahrscheinlichkeitsberechnung
 def prediktionauswerten(prediction):
@@ -96,7 +94,7 @@ def prediktionauswerten(prediction):
     prozent = 0
 
     if prediction[0][programmnummer] > 0.8:
-        #arduino.write(bytes(1, 'utf-8'))
+        arduino.write(bytes(1, 'utf-8'))
         richtung = "Links"
         print(richtung)
         print(labels[prediction.argmax()])
@@ -104,7 +102,7 @@ def prediktionauswerten(prediction):
         ausgewertete_steine_gesamt = ausgewertete_steine_gesamt + 1
 
     elif prediction[0][0] < 0.1:
-        #arduino.write(bytes(0, 'utf-8'))
+        arduino.write(bytes(0, 'utf-8'))
         richtung = "Rechts"
         print(richtung)
         print(labels[prediction.argmax()])
@@ -129,9 +127,10 @@ def prediktionauswerten(prediction):
 # main loop - Hauptprogramm
 while (True):
     ret, frame = camera.read()  # Capture frame by frame
-    # kommunikationlesen()
+    while arduino.in_waiting:
+        programmnummer = kommunikationlesen()
 
-    if Start == True:
+    if programmnummer > 0:
         prediction = steinerkennen()
         prediktionauswerten(prediction)
 
